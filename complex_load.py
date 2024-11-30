@@ -22,6 +22,25 @@ def low_pass_filter(signals, sampling_frequency = 250, cutoff_frequency = 4, ord
     
     plot_trial(filtered_signal)
 
+def spectogram_trial_average(trials):
+    trial = np.mean(trials,axis = 0)
+    trial = trial*np.hamming(trial.size)
+    # Normalize the audio data to the range [-1, 1]
+    trial = trial / np.max(np.abs(trial), axis=0)
+
+    nperseg = int(datasetA1.Fs* 1) 
+
+   
+    f, t, Sxx = signal.spectrogram(trial, fs = datasetA1.Fs,nperseg=nperseg,window=np.hanning(nperseg))
+
+    
+    plt.figure(figsize=(10, 6))
+    plt.pcolormesh(t, f, np.log(Sxx), shading='gouraud') 
+    plt.ylabel('Frequency [Hz]')
+    plt.ylim((0,20))
+    plt.xlabel('Time [sec]')
+    plt.title('Spectrogram of the EEG Signal')
+    
 def spectogram_trial(trial):
     trial = trial*np.hamming(trial.size)
     # Normalize the audio data to the range [-1, 1]
@@ -76,9 +95,9 @@ class MotorImageryDataset:
         # Types of motor imagery
         self.mi_types = {769: 'left', 770: 'right', 771: 'foot', 772: 'tongue', 783: 'unknown'}
 
-    def get_trials_from_channel(self, channel=11):
+    def get_trials_from_channel(self, channel=7):
 
-        # Channel default is C3
+        # Channel default is C3 
 
         startrial_code = 768
         starttrial_events = self.events_type == startrial_code
@@ -112,7 +131,8 @@ print(classes)
 
 #plot_trial(trials[0])
 #spectogram_trial(trials[20])
-#low_pass_filter(trials)
+low_pass_filter(trials)
+#spectogram_trial_average(trials)
 print("calculating for channel")
 
 
